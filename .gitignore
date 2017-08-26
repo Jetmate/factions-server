@@ -61,4 +61,4 @@ typings/
 bundle.js
 
 # Gulp build result
-main.js
+build/
