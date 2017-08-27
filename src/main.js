@@ -15,10 +15,23 @@ import Grid from './classes/Grid.js'
 const GRID_WIDTH = 200
 const GRID_HEIGHT = 200
 let grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 1)
-const WWW = path.join(__dirname, '../../factions/www')
+let WWW
+if (process.env.NODE_ENV === 'production') {
+  WWW = path.join(__dirname, 'www')
+} else {
+  WWW = path.join(__dirname, '../../factions/www')
+}
+
 
 const app = express()
-const server = app.listen(3000, '0.0.0.0')
+let server
+if (process.env.NODE_ENV === 'production') {
+  server = app.listen(3002, '127.0.0.1')
+  console.log('RUNNING ON http://127.0.0.1:3002/')
+} else {
+  server = app.listen(3000, '0.0.0.0')
+  console.log('RUNNING ON http://0.0.0.0:3000/')
+}
 const io = socketio(server)
 
 app.set('view engine', 'html')
@@ -62,9 +75,6 @@ app.get('/game', (req, res, next) => {
 })
 
 app.use(express.static(WWW))
-
-console.log('RUNNING ON http://0.0.0.0:3000/')
-
 
 
 io.on('connection', (socket) => {
