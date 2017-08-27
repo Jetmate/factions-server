@@ -12,9 +12,9 @@ import path from 'path'
 import Grid from './classes/Grid.js'
 
 
-const GRID_WIDTH = 20
-const GRID_HEIGHT = 20
-let grid = new Grid(GRID_WIDTH, GRID_HEIGHT)
+const GRID_WIDTH = 200
+const GRID_HEIGHT = 200
+let grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 1)
 const WWW = path.join(__dirname, '../../factions/www')
 
 const app = express()

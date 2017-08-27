@@ -11,7 +11,7 @@ const FINAL = 'main.js'
 gulp.task('babel', function () {
   return gulp.src(SRC)
     .pipe(babel({
-            presets: ['env']
+            presets: ['env', 'stage-0']
           }))
     .pipe(gulp.dest(DEST))
 })
