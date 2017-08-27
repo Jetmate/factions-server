@@ -12,9 +12,9 @@ import path from 'path'
 import Grid from './classes/Grid.js'
 
 
-const GRID_WIDTH = 200
-const GRID_HEIGHT = 200
-let grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 1)
+const GRID_WIDTH = 50
+const GRID_HEIGHT = 50
+let grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 2)
 let WWW
 if (process.env.NODE_ENV === 'production') {
   WWW = path.join(__dirname, 'www')
