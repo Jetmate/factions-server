@@ -25,6 +25,7 @@ export default class Grid {
     for (let i = 0; i < this.LEVELS[this.level].smoothCount; i++) {
       grid = this.smoothGrid(grid)
     }
+    this.outlineGrid(grid)
     return grid
   }
 
@@ -66,6 +67,20 @@ export default class Grid {
     }
 
     return grid
+  }
+
+  outlineGrid (grid) {
+    for (let x = 0; x < this.width; x++) {
+      for (let y of [0, this.height - 1]) {
+        grid[x][y] = 'block'
+      }
+    }
+
+    for (let y = 0; y < this.height; y++) {
+      for (let x of [0, this.width - 1]) {
+        grid[x][y] = 'block'
+      }
+    }
   }
 
   getSurroundingTiles (grid, tileX, tileY) {
