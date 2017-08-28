@@ -98,8 +98,8 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('new', id, coords)
   })
 
-  socket.on('player', (id, coords) => {
-    socket.broadcast.emit('player', id, coords)
+  socket.on('player', (id, coords, health) => {
+    socket.broadcast.emit('player', id, coords, health)
   })
 
   socket.on('playerDeath', (id) => {
