@@ -82,16 +82,16 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('playerChange', id, type, action)
   })
 
-  socket.on('newBullet', (bulletId, coords, rotation, velocity) => {
-    socket.broadcast.emit('newBullet', bulletId, coords, rotation, velocity)
+  socket.on('newBullet', (id, rotation, coords, difference, speed) => {
+    socket.broadcast.emit('newBullet', id, rotation, coords, difference, speed)
   })
 
   socket.on('bulletCrash', (bulletId) => {
     socket.broadcast.emit('bulletCrash', bulletId)
   })
 
-  socket.on('bulletHit', (bulletId, playerId) => {
-    socket.broadcast.emit('bulletHit', bulletId, playerId)
+  socket.on('bulletHit', (bulletId, playerId, death, shooterId) => {
+    socket.broadcast.emit('bulletHit', bulletId, playerId, death, shooterId)
   })
 
   socket.on('new', (id, coords) => {
@@ -102,8 +102,8 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('player', id, coords, health)
   })
 
-  socket.on('playerDeath', (id) => {
-    io.emit('playerDeath', id)
+  socket.on('playerDeath', (playerId, killerId) => {
+    io.emit('playerDeath', playerId, killerId)
   })
 
   socket.on('close', (id) => {
