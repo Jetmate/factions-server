@@ -109,15 +109,16 @@ export default class Grid {
     return count
   }
 
-  // randomCoords () {
-  //   while (true) {
-  //     let coords = [randRange(this.width), randRange(this.height)]
-  //     if (!this.grid[coords[0]][coords[1]]) {
-  //       return coords
-  //     }
-  //   }
-  // }
   randomCoords () {
-    return [9, 9]
+    if (process.env.NODE_ENV === 'production') {
+      while (true) {
+        let coords = [randRange(this.width), randRange(this.height)]
+        if (!this.grid[coords[0]][coords[1]]) {
+          return coords
+        }
+      }
+    } else {
+      return [9, 9]
+    }
   }
 }

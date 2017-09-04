@@ -48,22 +48,25 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieSession({keys: ['asdf', 'vj32fd', '3jadva3']}))
 
 app.get('/', (req, res, next) => {
-  // if ('id' in req.session) {
-  //   res.render('index.html', {component: 'extraTab'})
-  // } else {
   res.render('index.html', {component: 'setup'})
-  // }
 })
 
 app.post('/signup', (req, res, next) => {
-  req.session.name = req.body.id
-  res.redirect('/game')
+  if (req.session.name in leaderboard) {
+    res.render('index.html', {component: 'extraTab'})
+  } else {
+    req.session.name = req.body.id
+    res.redirect('/game')
+  }
 })
 
 app.get('/game', (req, res, next) => {
   if (typeof req.session.name === 'undefined') {
     res.redirect('/')
+  } else if (req.session.name in leaderboard) {
+    res.render('index.html', {component: 'extraTab'})
   } else {
+    leaderboard[req.session.name] = 0
     res.render('index.html', {
       component: 'game',
       id: req.session.name,
@@ -99,7 +102,6 @@ io.on('connection', (socket) => {
 
   socket.on('newPlayer', (id, coords) => {
     socket.broadcast.emit('newPlayer', id, coords)
-    leaderboard[id] = 0
   })
 
   socket.on('player', (id, coords, health) => {
