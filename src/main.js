@@ -22,6 +22,7 @@ if (process.env.NODE_ENV === 'production') {
   WWW = path.join(__dirname, '../../factions/www')
 }
 
+let leaderboard = {}
 
 const app = express()
 let server
@@ -69,7 +70,8 @@ app.get('/game', (req, res, next) => {
       coords: JSON.stringify(grid.randomCoords()),
       grid: JSON.stringify(grid.grid),
       GRID_WIDTH: grid.width,
-      GRID_HEIGHT: grid.height
+      GRID_HEIGHT: grid.height,
+      leaderboard: JSON.stringify(leaderboard)
     })
   }
 })
@@ -77,13 +79,14 @@ app.get('/game', (req, res, next) => {
 app.use(express.static(WWW))
 
 
+
 io.on('connection', (socket) => {
   socket.on('playerChange', (id, type, action) => {
     socket.broadcast.emit('playerChange', id, type, action)
   })
 
-  socket.on('newBullet', (id, rotation, coords, difference, speed) => {
-    socket.broadcast.emit('newBullet', id, rotation, coords, difference, speed)
+  socket.on('newBullet', (coords, id, rotation, velocity) => {
+    socket.broadcast.emit('newBullet', coords, id, rotation, velocity)
   })
 
   socket.on('bulletCrash', (bulletId) => {
@@ -94,8 +97,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('bulletHit', bulletId, playerId, death, shooterId)
   })
 
-  socket.on('new', (id, coords) => {
-    socket.broadcast.emit('new', id, coords)
+  socket.on('newPlayer', (id, coords) => {
+    socket.broadcast.emit('newPlayer', id, coords)
+    leaderboard[id] = 0
   })
 
   socket.on('player', (id, coords, health) => {
@@ -104,9 +108,12 @@ io.on('connection', (socket) => {
 
   socket.on('playerDeath', (playerId, killerId) => {
     io.emit('playerDeath', playerId, killerId)
+    leaderboard[killerId]++
+    delete leaderboard[playerId]
   })
 
   socket.on('close', (id) => {
     socket.broadcast.emit('close', id)
+    delete leaderboard[id]
   })
 })
