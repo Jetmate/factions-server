@@ -47,6 +47,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 let leaderboard = {}
+let reloading = []
 
 const app = express()
 let server
@@ -93,10 +94,16 @@ app.post('/signup', (req, res, next) => {
 app.get('/game', (req, res, next) => {
   if (typeof req.session.name === 'undefined') {
     res.redirect('/')
-  } else if (req.session.name in leaderboard) {
+  } else if (req.session.name in leaderboard && !(reloading.includes(req.session.name))) {
     res.render('index.html', {component: 'extraTab'})
   } else {
-    leaderboard[req.session.name] = 0
+    if (!(req.session.name in leaderboard)) {
+      leaderboard[req.session.name] = 0
+    } else {
+      reloading.splice(reloading.indexOf(req.session.name), 1)
+    }
+
+    console.log('new', leaderboard)
     res.render('index.html', {
       component: 'game',
       id: req.session.name,
@@ -141,11 +148,18 @@ io.on('connection', (socket) => {
   socket.on('playerDeath', (playerId, killerId) => {
     io.emit('playerDeath', playerId, killerId)
     leaderboard[killerId]++
-    delete leaderboard[playerId]
+    console.log('death', leaderboard)
+    // delete leaderboard[playerId]
   })
 
   socket.on('close', (id) => {
+    console.log('close')
     socket.broadcast.emit('close', id)
     delete leaderboard[id]
+  })
+
+  socket.on('reload', (id) => {
+    socket.broadcast.emit('reload', id)
+    reloading.push(id)
   })
 })
