@@ -15,8 +15,21 @@ import fs from 'fs'
 import readline from 'readline'
 
 
+const GRID_WIDTH = 50
+const GRID_HEIGHT = 50
+let grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 2)
+let WWW
+if (process.env.NODE_ENV === 'production') {
+  WWW = path.join(__dirname, 'www')
+} else {
+  WWW = path.join(__dirname, '../../factions/www')
+}
+
+let leaderboard = {}
+let reloading = []
+
 const readLine = readline.createInterface({
-  input: fs.createReadStream(path.join(__dirname, '../badWords.txt'))
+  input: fs.createReadStream(path.join(WWW, 'badWords.txt'))
 })
 
 let badWords = []
@@ -35,19 +48,6 @@ function hasBadWord (word) {
   return false
 }
 
-
-const GRID_WIDTH = 50
-const GRID_HEIGHT = 50
-let grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 2)
-let WWW
-if (process.env.NODE_ENV === 'production') {
-  WWW = path.join(__dirname, 'www')
-} else {
-  WWW = path.join(__dirname, '../../factions/www')
-}
-
-let leaderboard = {}
-let reloading = []
 
 const app = express()
 let server
@@ -85,6 +85,8 @@ app.post('/signup', (req, res, next) => {
     res.render('index.html', {component: 'setup', error: 'please be civil'})
   } else if (req.body.id.length > 7) {
     res.render('index.html', {component: 'setup', error: 'please enter something shorter'})
+  } else if (req.body.id in leaderboard) {
+    res.render('index.html', {component: 'setup', error: 'username taken!'})
   } else {
     req.session.name = req.body.id
     res.redirect('/game')
