@@ -4,7 +4,7 @@ const gulp = require('gulp')
 const nodemon = require('gulp-nodemon')
 const babel = require('gulp-babel')
 
-const SRC = 'src/**/*.*'
+const SRC = 'src/**/*.js'
 const DEST = 'build'
 const FINAL = 'main.js'
 

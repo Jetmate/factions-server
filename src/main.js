@@ -11,6 +11,30 @@ import path from 'path'
 
 import Grid from './classes/Grid.js'
 
+import fs from 'fs'
+import readline from 'readline'
+
+
+const readLine = readline.createInterface({
+  input: fs.createReadStream(path.join(__dirname, '../badWords.txt'))
+})
+
+let badWords = []
+readLine.on('line', (line) => {
+  if (line) {
+    badWords.push(line)
+  }
+})
+
+function hasBadWord (word) {
+  for (let badWord of badWords) {
+    if (word.includes(badWord)) {
+      return true
+    }
+  }
+  return false
+}
+
 
 const GRID_WIDTH = 50
 const GRID_HEIGHT = 50
@@ -54,6 +78,12 @@ app.get('/', (req, res, next) => {
 app.post('/signup', (req, res, next) => {
   if (req.session.name in leaderboard) {
     res.render('index.html', {component: 'extraTab'})
+  } else if (!req.body.id) {
+    res.render('index.html', {component: 'setup', error: 'please actually input a name'})
+  } else if (hasBadWord(req.body.id)) {
+    res.render('index.html', {component: 'setup', error: 'please be civil'})
+  } else if (req.body.id.length > 7) {
+    res.render('index.html', {component: 'setup', error: 'please enter something shorter'})
   } else {
     req.session.name = req.body.id
     res.redirect('/game')
