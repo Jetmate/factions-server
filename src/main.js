@@ -17,6 +17,7 @@ import readline from 'readline'
 
 const GRID_WIDTH = 50
 const GRID_HEIGHT = 50
+const MAX_USERNAME_WIDTH = 6
 let grid = new Grid(GRID_WIDTH, GRID_HEIGHT, 2)
 let WWW
 if (process.env.NODE_ENV === 'production') {
@@ -83,7 +84,7 @@ app.post('/signup', (req, res, next) => {
     res.render('index.html', {component: 'setup', error: 'please actually input a name'})
   } else if (hasBadWord(req.body.id)) {
     res.render('index.html', {component: 'setup', error: 'please be civil'})
-  } else if (req.body.id.length > 7) {
+  } else if (req.body.id.length > MAX_USERNAME_WIDTH) {
     res.render('index.html', {component: 'setup', error: 'please enter something shorter'})
   } else if (req.body.id in leaderboard) {
     res.render('index.html', {component: 'setup', error: 'username taken!'})
