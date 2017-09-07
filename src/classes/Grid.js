@@ -1,6 +1,4 @@
-function randRange (upper) {
-  return Math.floor(Math.random() * upper)
-}
+import { randRange } from '../helpers.js'
 
 export default class Grid {
   LEVELS = [

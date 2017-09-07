@@ -8,12 +8,12 @@ import handlebars from 'hbs'
 import cookieSession from 'cookie-session'
 import bodyParser from 'body-parser'
 import path from 'path'
-
-import Grid from './classes/Grid.js'
-
+import schedule from 'node-schedule'
 import fs from 'fs'
 import readline from 'readline'
 
+import Grid from './classes/Grid.js'
+import { randRange } from './helpers.js'
 
 const GRID_WIDTH = 50
 const GRID_HEIGHT = 50
@@ -28,6 +28,12 @@ if (process.env.NODE_ENV === 'production') {
 
 let leaderboard = {}
 let reloading = []
+
+schedule.scheduleJob('0 0 * * *', () => {
+  grid = new Grid(GRID_WIDTH, GRID_HEIGHT, randRange(4))
+  leaderboard = {}
+  reloading = []
+})
 
 const readLine = readline.createInterface({
   input: fs.createReadStream(path.join(WWW, 'badWords.txt'))
@@ -106,7 +112,7 @@ app.get('/game', (req, res, next) => {
       reloading.splice(reloading.indexOf(req.session.name), 1)
     }
 
-    console.log('new', leaderboard)
+    // console.log('new', leaderboard)
     res.render('index.html', {
       component: 'game',
       id: req.session.name,
@@ -151,12 +157,12 @@ io.on('connection', (socket) => {
   socket.on('playerDeath', (playerId, killerId) => {
     io.emit('playerDeath', playerId, killerId)
     leaderboard[killerId]++
-    console.log('death', leaderboard)
+    // console.log('death', leaderboard)
     // delete leaderboard[playerId]
   })
 
   socket.on('close', (id) => {
-    console.log('close')
+    // console.log('close')
     socket.broadcast.emit('close', id)
     delete leaderboard[id]
   })
