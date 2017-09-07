@@ -5,11 +5,11 @@ function randRange (upper) {
 export default class Grid {
   LEVELS = [
     // {fillPercent: 24, smoothRate: 4, smoothCount: 3},
-    {fillPercent: 23, smoothRate: 4, smoothCount: 4},
+    {fillPercent: .23, smoothRate: 4, smoothCount: 4, treePercent: .004},
     // {fillPercent: 49, smoothRate: 5, smoothCount: 4},
-    {fillPercent: 48, smoothRate: 5, smoothCount: 4},
-    {fillPercent: 15, smoothRate: 3, smoothCount: 5},
-    {fillPercent: 20, smoothRate: 3, smoothCount: 4}
+    {fillPercent: .48, smoothRate: 5, smoothCount: 4, treePercent: .004},
+    {fillPercent: .15, smoothRate: 3, smoothCount: 5, treePercent: .004},
+    {fillPercent: .20, smoothRate: 3, smoothCount: 4, treePercent: .004}
   ]
 
   constructor (width, height, level) {
@@ -26,7 +26,18 @@ export default class Grid {
       grid = this.smoothGrid(grid)
     }
     this.outlineGrid(grid)
+    this.growTrees(grid)
     return grid
+  }
+
+  growTrees (grid) {
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if (!grid[x][y] && Math.random() < this.LEVELS[this.level].treePercent) {
+          grid[x][y] = 'tree'
+        }
+      }
+    }
   }
 
   createGrid () {
@@ -45,7 +56,7 @@ export default class Grid {
   populateGrid (grid) {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (randRange(100) < this.LEVELS[this.level].fillPercent) {
+        if (Math.random() < this.LEVELS[this.level].fillPercent) {
           grid[x][y] = 'block'
         } else {
           grid[x][y] = ''
