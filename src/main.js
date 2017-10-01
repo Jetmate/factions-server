@@ -28,6 +28,7 @@ if (process.env.NODE_ENV === 'production') {
 
 let leaderboard = {}
 let reloading = []
+let items = []
 
 schedule.scheduleJob('0 0 * * *', () => {
   grid = new Grid(GRID_WIDTH, GRID_HEIGHT, randRange(4))
@@ -120,7 +121,8 @@ app.get('/game', (req, res, next) => {
       grid: JSON.stringify(grid.grid),
       GRID_WIDTH: grid.width,
       GRID_HEIGHT: grid.height,
-      leaderboard: JSON.stringify(leaderboard)
+      leaderboard: JSON.stringify(leaderboard),
+      items: JSON.stringify(items)
     })
   }
 })
@@ -170,5 +172,15 @@ io.on('connection', (socket) => {
   socket.on('reload', (id) => {
     socket.broadcast.emit('reload', id)
     reloading.push(id)
+  })
+
+  socket.on('gridChange', (x, y, newType) => {
+    socket.broadcast.emit('gridChange', x, y, newType)
+    grid.grid[x][y] = newType
+  })
+
+  socket.on('newItem', (x, y, type) => {
+    socket.broadcast.emit('newItem', x, y, type)
+    items.push({x: x, y: y, type: type})
   })
 })
